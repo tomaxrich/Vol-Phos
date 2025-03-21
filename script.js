@@ -63,8 +63,8 @@ function updateCameraPosition() {
 
 function onMouseMove(event) {
   if (isMouseCaptured) {
-    const rotationSpeed = 0.005; // Adjust rotation speed as needed
-    cameraRotation.y -= event.movementX * rotationSpeed;
+    const rotationSpeed = 0.002; // Reduced rotation speed
+    cameraRotation.y += event.movementX * rotationSpeed; // Inverted left-right movement
     rectangle.rotation.y = cameraRotation.y;
   }
 }
