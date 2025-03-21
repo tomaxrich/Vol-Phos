@@ -1,5 +1,4 @@
 // Assuming Three.js is globally available or imported as needed
-import * as THREE from 'three';
 
 export class GameObject {
   constructor(geometry, material, position = {x: 0, y: 0, z: 0}) {

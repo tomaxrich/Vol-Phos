@@ -1,5 +1,5 @@
-import { GameObject } from './GameObject.js';
-import * as THREE from './three.module.js';
+import { GameObject } from '/GameObject.js';
+//import * as THREE from './three.module.js';
 let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
 let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
@@ -8,7 +8,6 @@ let moveDirection = { forward: false, backward: false, left: false, right: false
 
 
 function init() {
-
 
   // Set up the scene
   scene = new THREE.Scene();
@@ -24,6 +23,7 @@ function init() {
   const rectangleGeometry = new THREE.BoxGeometry(0.5, 3, 0.5);
   const rectangleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   rectangle = new GameObject(rectangleGeometry, rectangleMaterial);
+  //rectangle = new THREE.Mesh(rectangleGeometry, rectangleMaterial);
   rectangle.position.y = 1.5;
   scene.add(rectangle);
 
