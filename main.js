@@ -1,3 +1,4 @@
+import { GameObject } from './GameObject.js';
 let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
 let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
@@ -18,7 +19,7 @@ function init() {
   // Create a vertical rectangle
   const rectangleGeometry = new THREE.BoxGeometry(0.5, 3, 0.5);
   const rectangleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  rectangle = new THREE.Mesh(rectangleGeometry, rectangleMaterial);
+  rectangle = new GameObject(rectangleGeometry, rectangleMaterial);
   rectangle.position.y = 1.5;
   scene.add(rectangle);
 
@@ -113,21 +114,24 @@ function onKeyUp(event) {
 }
 
 function update() {
-  const speed = 0.02; // Speed of the rectangle's movement
+  const speed = 0.02;
 
   if (moveDirection.forward) {
-    rectangle.translateZ(speed); // Moves the rectangle forward relative to its local Z-axis
+    rectangle.moveForward(speed);
   }
   if (moveDirection.backward) {
-    rectangle.translateZ(-speed); // Moves the rectangle backward relative to its local Z-axis
+    rectangle.moveBackward(speed);
   }
   if (moveDirection.left) {
-    rectangle.translateX(speed); // Moves the rectangle left relative to its local X-axis
+    rectangle.moveLeft(speed);
   }
   if (moveDirection.right) {
-    rectangle.translateX(-speed); // Moves the rectangle right relative to its local X-axis
+    rectangle.moveRight(speed);
   }
+
+  rectangle.updatePosition();
 }
+
 
 // Update loop
 function gameLoop() {
