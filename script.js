@@ -1,4 +1,5 @@
 let scene, camera, renderer, rectangle, plane;
+let isMouseCaptured = false;
 
 function init() {
   // Set up the scene
@@ -27,15 +28,34 @@ function init() {
   plane.rotation.x = Math.PI / 2;
   scene.add(plane);
 
+  // Add mouse move event listener
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('keydown', onKeyDown);
+
   // Start the render loop
   render();
 }
 
 function render() {
   requestAnimationFrame(render);
-
-  // Render the scene
   renderer.render(scene, camera);
+}
+
+function onMouseMove(event) {
+  if (isMouseCaptured) {
+    camera.rotation.y -= event.movementX * 0.002;
+    camera.rotation.x -= event.movementY * 0.002;
+  }
+}
+
+function onKeyDown(event) {
+  if (event.key === 'Tab') {
+    if (isMouseCaptured) {
+      document.exitPointerLock();
+    } else {
+      document.getElementById('gameCanvas').requestPointerLock();
+    }
+  }
 }
 
 // Event listeners for key presses to move the rectangle left and right
@@ -65,4 +85,9 @@ function gameLoop() {
 document.getElementById('startGameButton').addEventListener('click', () => {
   init();
   gameLoop();
+});
+
+// Pointer lock change event to track mouse capture state
+document.addEventListener('pointerlockchange', () => {
+  isMouseCaptured = !!document.pointerLockElement;
 });
