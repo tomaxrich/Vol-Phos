@@ -2,6 +2,7 @@ let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
 let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { x: 0, y: 0 }; // Track camera rotation
+let moveDirection = { forward: false, backward: false, left: false, right: false };
 
 function init() {
   // Set up the scene
@@ -26,9 +27,9 @@ function init() {
   const texture = textureLoader.load('https://threejsfundamentals.org/threejs/resources/images/checker.png');
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(10, 10);
+  texture.repeat.set(50, 50); // Increase the repeat to make the texture fit the larger plane
 
-  const planeGeometry = new THREE.PlaneGeometry(10, 10);
+  const planeGeometry = new THREE.PlaneGeometry(100, 100); // Increase the size of the plane
   const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
   plane = new THREE.Mesh(planeGeometry, planeMaterial);
   plane.rotation.x = Math.PI / 2;
@@ -37,6 +38,7 @@ function init() {
   // Add mouse move event listener
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onKeyUp);
 
   // Start the render loop
   render();
@@ -44,6 +46,7 @@ function init() {
 
 function render() {
   requestAnimationFrame(render);
+  update();
   updateCameraPosition();
   renderer.render(scene, camera);
 }
@@ -66,29 +69,64 @@ function onMouseMove(event) {
 }
 
 function onKeyDown(event) {
-  if (event.key === 'Tab') {
-    if (isMouseCaptured) {
-      document.exitPointerLock();
-    } else {
-      document.getElementById('gameCanvas').requestPointerLock();
-    }
+  switch (event.key) {
+    case 'Tab':
+      if (isMouseCaptured) {
+        document.exitPointerLock();
+      } else {
+        document.getElementById('gameCanvas').requestPointerLock();
+      }
+      break;
+    case 'w':
+      moveDirection.forward = true;
+      break;
+    case 's':
+      moveDirection.backward = true;
+      break;
+    case 'a':
+      moveDirection.left = true;
+      break;
+    case 'd':
+      moveDirection.right = true;
+      break;
   }
 }
 
-// Event listeners for key presses to move the rectangle left and right
-let keys = {};
-
-window.addEventListener('keydown', (e) => {
-  keys[e.key] = true;
-});
-
-window.addEventListener('keyup', (e) => {
-  keys[e.key] = false;
-});
+function onKeyUp(event) {
+  switch (event.key) {
+    case 'w':
+      moveDirection.forward = false;
+      break;
+    case 's':
+      moveDirection.backward = false;
+      break;
+    case 'a':
+      moveDirection.left = false;
+      break;
+    case 'd':
+      moveDirection.right = false;
+      break;
+  }
+}
 
 function update() {
-  if (keys['a']) rectangle.position.x -= 0.1;
-  if (keys['d']) rectangle.position.x += 0.1;
+  const speed = 0.1;
+  if (moveDirection.forward) {
+    rectangle.position.x -= speed * Math.sin(cameraRotation.y);
+    rectangle.position.z -= speed * Math.cos(cameraRotation.y);
+  }
+  if (moveDirection.backward) {
+    rectangle.position.x += speed * Math.sin(cameraRotation.y);
+    rectangle.position.z += speed * Math.cos(cameraRotation.y);
+  }
+  if (moveDirection.left) {
+    rectangle.position.x -= speed * Math.cos(cameraRotation.y);
+    rectangle.position.z += speed * Math.sin(cameraRotation.y);
+  }
+  if (moveDirection.right) {
+    rectangle.position.x += speed * Math.cos(cameraRotation.y);
+    rectangle.position.z -= speed * Math.sin(cameraRotation.y);
+  }
 }
 
 // Update loop
