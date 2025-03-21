@@ -1,5 +1,7 @@
 let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
+let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
+let cameraRotation = { x: 0, y: 0 }; // Track camera rotation
 
 function init() {
   // Set up the scene
@@ -7,8 +9,6 @@ function init() {
 
   // Set up the camera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 5;
-  camera.position.y = 1;
 
   // Set up the renderer
   renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
@@ -38,13 +38,24 @@ function init() {
 
 function render() {
   requestAnimationFrame(render);
+  updateCameraPosition();
   renderer.render(scene, camera);
+}
+
+function updateCameraPosition() {
+  // Calculate camera position based on rectangle position and offset
+  const offsetX = cameraOffset.x * Math.cos(cameraRotation.y) - cameraOffset.z * Math.sin(cameraRotation.y);
+  const offsetZ = cameraOffset.x * Math.sin(cameraRotation.y) + cameraOffset.z * Math.cos(cameraRotation.y);
+  camera.position.x = rectangle.position.x + offsetX;
+  camera.position.y = rectangle.position.y + cameraOffset.y;
+  camera.position.z = rectangle.position.z + offsetZ;
+  camera.lookAt(rectangle.position);
 }
 
 function onMouseMove(event) {
   if (isMouseCaptured) {
-    camera.rotation.y -= event.movementX * 0.002;
-    camera.rotation.x -= event.movementY * 0.002;
+    cameraRotation.y -= event.movementX * 0.002;
+    rectangle.rotation.y = cameraRotation.y;
   }
 }
 
