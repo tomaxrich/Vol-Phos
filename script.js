@@ -63,7 +63,9 @@ function updateCameraPosition() {
 
 function onMouseMove(event) {
   if (isMouseCaptured) {
+    // Update camera rotation based on mouse movement
     cameraRotation.y -= event.movementX * 0.002;
+    // Apply the camera rotation to the rectangle's rotation
     rectangle.rotation.y = cameraRotation.y;
   }
 }
@@ -111,6 +113,7 @@ function onKeyUp(event) {
 
 function update() {
   const speed = 0.02; // Further reduced speed
+  // Move the rectangle based on direction and rotation
   if (moveDirection.forward) {
     rectangle.position.x -= speed * Math.sin(rectangle.rotation.y);
     rectangle.position.z -= speed * Math.cos(rectangle.rotation.y);
