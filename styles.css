@@ -11,10 +11,17 @@ body {
   }
   
   header {
-    background-color: #333;
-    color: white;
+    background-color: #1C1C1C; /* Dark background color */
+    color: #FF0000; /* Sith red color for text */
     padding: 1em;
     text-align: center;
+    border-bottom: 2px solid #FF0000; /* Red bottom border */
+  }
+  
+  header h1 {
+    font-family: 'Star Jedi', sans-serif; /* Star Wars themed font, make sure to include this font */
+    font-size: 2.5em;
+    margin: 0;
   }
   
   header nav ul {
@@ -28,8 +35,9 @@ body {
   }
   
   header nav ul li a {
-    color: white;
+    color: #FF0000; /* Sith red color for links */
     text-decoration: none;
+    font-family: 'Star Jedi', sans-serif; /* Star Wars themed font */
   }
   
   main {
@@ -54,7 +62,7 @@ body {
   }
   
   footer {
-    background-color: #333;
+    background-color: #1C1C1C;
     color: white;
     text-align: center;
     padding: 1em;
