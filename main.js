@@ -1,14 +1,12 @@
-import { GameObject } from '/GameObject.js';
-//import * as THREE from './three.module.js';
+import { GameObject } from './GameObject.js';
+
 let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
 let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
 
-
 function init() {
-
   // Set up the scene
   scene = new THREE.Scene();
 
@@ -19,15 +17,13 @@ function init() {
   renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  // Create a vertical rectangle
+  // Create a vertical rectangle using GameObject
   const rectangleGeometry = new THREE.BoxGeometry(0.5, 3, 0.5);
   const rectangleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  rectangle = new GameObject(rectangleGeometry, rectangleMaterial);
-  //rectangle = new THREE.Mesh(rectangleGeometry, rectangleMaterial);
-  rectangle.position.y = 1.5;
-  scene.add(rectangle);
+  rectangle = new GameObject(rectangleGeometry, rectangleMaterial, { x: 0, y: 1.5, z: 0 });
+  rectangle.addToScene(scene);
 
-  // Load texture and create a horizontal black plane with texture
+  // Load texture and create a horizontal black plane with texture using GameObject
   const textureLoader = new THREE.TextureLoader();
   const texture = textureLoader.load('https://threejsfundamentals.org/threejs/resources/images/checker.png');
   texture.wrapS = THREE.RepeatWrapping;
@@ -36,9 +32,9 @@ function init() {
 
   const planeGeometry = new THREE.PlaneGeometry(100, 100); // Increase the size of the plane
   const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-  plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.rotation.x = Math.PI / 2;
-  scene.add(plane);
+  plane = new GameObject(planeGeometry, planeMaterial);
+  plane.mesh.rotation.x = Math.PI / 2;
+  plane.addToScene(scene);
 
   // Add mouse move event listener
   document.addEventListener('mousemove', onMouseMove);
@@ -60,21 +56,20 @@ function updateCameraPosition() {
   const distanceBehind = 5; // How far behind the rectangle the camera should stay
   const cameraHeight = 3; // How high the camera should be relative to the rectangle's base
 
-  camera.position.x = rectangle.position.x - distanceBehind * Math.sin(rectangle.rotation.y);
-  camera.position.y = rectangle.position.y + cameraHeight;
-  camera.position.z = rectangle.position.z - distanceBehind * Math.cos(rectangle.rotation.y);
+  camera.position.x = rectangle.mesh.position.x - distanceBehind * Math.sin(rectangle.mesh.rotation.y);
+  camera.position.y = rectangle.mesh.position.y + cameraHeight;
+  camera.position.z = rectangle.mesh.position.z - distanceBehind * Math.cos(rectangle.mesh.rotation.y);
   
-  camera.lookAt(rectangle.position); // Ensure the camera always looks at the rectangle
+  camera.lookAt(rectangle.mesh.position); // Ensure the camera always looks at the rectangle
 }
 
 function onMouseMove(event) {
   if (isMouseCaptured) {
     const rotationSpeed = 0.005; // Adjust this to tweak how quickly the rectangle rotates
-    rectangle.rotation.y -= event.movementX * rotationSpeed;
+    rectangle.mesh.rotation.y -= event.movementX * rotationSpeed;
     updateCameraPosition(); // Update the camera's position to reflect the new orientation
   }
 }
-
 
 function onKeyDown(event) {
   switch (event.key) {
@@ -135,7 +130,6 @@ function update() {
 
   rectangle.updatePosition();
 }
-
 
 // Update loop
 function gameLoop() {
