@@ -21,9 +21,15 @@ function init() {
   rectangle.position.y = 1.5;
   scene.add(rectangle);
 
-  // Create a horizontal black plane
+  // Load texture and create a horizontal black plane with texture
+  const textureLoader = new THREE.TextureLoader();
+  const texture = textureLoader.load('https://threejsfundamentals.org/threejs/resources/images/checker.png');
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(10, 10);
+
   const planeGeometry = new THREE.PlaneGeometry(10, 10);
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide });
+  const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
   plane = new THREE.Mesh(planeGeometry, planeMaterial);
   plane.rotation.x = Math.PI / 2;
   scene.add(plane);
