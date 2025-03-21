@@ -110,7 +110,7 @@ function onKeyUp(event) {
 }
 
 function update() {
-  const speed = 0.1;
+  const speed = 0.05; // Adjusted speed
   if (moveDirection.forward) {
     rectangle.position.x -= speed * Math.sin(cameraRotation.y);
     rectangle.position.z -= speed * Math.cos(cameraRotation.y);
