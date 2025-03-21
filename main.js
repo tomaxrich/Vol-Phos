@@ -1,11 +1,15 @@
 import { GameObject } from './GameObject.js';
+import * as THREE from './three.module.js';
 let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
 let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
 
+
 function init() {
+
+
   // Set up the scene
   scene = new THREE.Scene();
 
