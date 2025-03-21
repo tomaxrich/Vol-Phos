@@ -1,62 +1,38 @@
-// Get references to the canvas and context
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+let scene, camera, renderer, cube;
 
-// Set canvas dimensions
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-// Game variables
-let player = {
-  x: canvas.width / 2,
-  y: canvas.height / 2,
-  width: 50,
-  height: 50,
-  speed: 5,
-  color: 'blue'
-};
-
-let keys = {};
-
-// Event listeners for key presses
-window.addEventListener('keydown', (e) => {
-  keys[e.key] = true;
-});
-
-window.addEventListener('keyup', (e) => {
-  keys[e.key] = false;
-});
-
-// Game loop
-function gameLoop() {
-  update();
+function init() {
+  // Set up the scene
+  scene = new THREE.Scene();
+  
+  // Set up the camera
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+  
+  // Set up the renderer
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  
+  // Create a cube
+  const geometry = new THREE.BoxGeometry();
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+  
+  // Start the render loop
   render();
-  requestAnimationFrame(gameLoop);
 }
 
-// Update game state
-function update() {
-  // Player movement
-  if (keys['w']) player.y -= player.speed;
-  if (keys['s']) player.y += player.speed;
-  if (keys['a']) player.x -= player.speed;
-  if (keys['d']) player.x += player.speed;
-}
-
-// Render game state
 function render() {
-  // Clear the canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw the player
-  ctx.fillStyle = player.color;
-  ctx.fillRect(player.x, player.y, player.width, player.height);
-
-  console.log('Rendering player at:', player.x, player.y);
+  requestAnimationFrame(render);
+  
+  // Rotate the cube for some basic animation
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+  
+  renderer.render(scene, camera);
 }
 
-// Start the game loop when the "Start Game" button is clicked
+// Start the game when the "Start Game" button is clicked
 document.getElementById('startGameButton').addEventListener('click', () => {
-  console.log('Starting game loop');
-  gameLoop();
+  init();
 });
