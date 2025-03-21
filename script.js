@@ -52,23 +52,24 @@ function render() {
 }
 
 function updateCameraPosition() {
-  // Calculate camera position based on rectangle position and offset
-  const offsetX = cameraOffset.x * Math.cos(cameraRotation.y) - cameraOffset.z * Math.sin(cameraRotation.y);
-  const offsetZ = cameraOffset.x * Math.sin(cameraRotation.y) + cameraOffset.z * Math.cos(cameraRotation.y);
-  camera.position.x = rectangle.position.x + offsetX;
-  camera.position.y = rectangle.position.y + cameraOffset.y;
-  camera.position.z = rectangle.position.z + offsetZ;
-  camera.lookAt(rectangle.position);
+  const distanceBehind = 5; // How far behind the rectangle the camera should stay
+  const cameraHeight = 3; // How high the camera should be relative to the rectangle's base
+
+  camera.position.x = rectangle.position.x - distanceBehind * Math.sin(rectangle.rotation.y);
+  camera.position.y = rectangle.position.y + cameraHeight;
+  camera.position.z = rectangle.position.z - distanceBehind * Math.cos(rectangle.rotation.y);
+  
+  camera.lookAt(rectangle.position); // Ensure the camera always looks at the rectangle
 }
 
 function onMouseMove(event) {
   if (isMouseCaptured) {
-    // Update camera rotation based on mouse movement, inverted
-    cameraRotation.y += event.movementX * 0.002;
-    // Apply the camera rotation to the rectangle's rotation
-    rectangle.rotation.y = cameraRotation.y;
+    const rotationSpeed = 0.005; // Adjust this to tweak how quickly the rectangle rotates
+    rectangle.rotation.y += event.movementX * rotationSpeed;
+    updateCameraPosition(); // Update the camera's position to reflect the new orientation
   }
 }
+
 
 function onKeyDown(event) {
   switch (event.key) {
@@ -112,15 +113,15 @@ function onKeyUp(event) {
 }
 
 function update() {
-  const speed = 0.02; // Further reduced speed
-  // Move the rectangle based on direction and rotation
+  const speed = 0.02; // Speed of the rectangle's movement
+
   if (moveDirection.forward) {
-    rectangle.position.x -= speed * Math.sin(rectangle.rotation.y);
-    rectangle.position.z -= speed * Math.cos(rectangle.rotation.y);
-  }
-  if (moveDirection.backward) {
     rectangle.position.x += speed * Math.sin(rectangle.rotation.y);
     rectangle.position.z += speed * Math.cos(rectangle.rotation.y);
+  }
+  if (moveDirection.backward) {
+    rectangle.position.x -= speed * Math.sin(rectangle.rotation.y);
+    rectangle.position.z -= speed * Math.cos(rectangle.rotation.y);
   }
   if (moveDirection.left) {
     rectangle.position.x -= speed * Math.cos(rectangle.rotation.y);
