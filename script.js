@@ -64,6 +64,8 @@ function updateCameraPosition() {
 function onMouseMove(event) {
   if (isMouseCaptured) {
     cameraRotation.y -= event.movementX * 0.002;
+    cameraRotation.x -= event.movementY * 0.002;
+    cameraRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraRotation.x));
     rectangle.rotation.y = cameraRotation.y;
   }
 }
@@ -112,20 +114,20 @@ function onKeyUp(event) {
 function update() {
   const speed = 0.05; // Adjusted speed
   if (moveDirection.forward) {
-    rectangle.position.x -= speed * Math.sin(cameraRotation.y);
-    rectangle.position.z -= speed * Math.cos(cameraRotation.y);
+    rectangle.position.x -= speed * Math.sin(rectangle.rotation.y);
+    rectangle.position.z -= speed * Math.cos(rectangle.rotation.y);
   }
   if (moveDirection.backward) {
-    rectangle.position.x += speed * Math.sin(cameraRotation.y);
-    rectangle.position.z += speed * Math.cos(cameraRotation.y);
+    rectangle.position.x += speed * Math.sin(rectangle.rotation.y);
+    rectangle.position.z += speed * Math.cos(rectangle.rotation.y);
   }
   if (moveDirection.left) {
-    rectangle.position.x -= speed * Math.cos(cameraRotation.y);
-    rectangle.position.z += speed * Math.sin(cameraRotation.y);
+    rectangle.position.x -= speed * Math.cos(rectangle.rotation.y);
+    rectangle.position.z += speed * Math.sin(rectangle.rotation.y);
   }
   if (moveDirection.right) {
-    rectangle.position.x += speed * Math.cos(cameraRotation.y);
-    rectangle.position.z -= speed * Math.sin(cameraRotation.y);
+    rectangle.position.x += speed * Math.cos(rectangle.rotation.y);
+    rectangle.position.z -= speed * Math.sin(rectangle.rotation.y);
   }
 }
 
