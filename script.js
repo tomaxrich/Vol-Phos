@@ -65,7 +65,7 @@ function updateCameraPosition() {
 function onMouseMove(event) {
   if (isMouseCaptured) {
     const rotationSpeed = 0.005; // Adjust this to tweak how quickly the rectangle rotates
-    rectangle.rotation.y += event.movementX * rotationSpeed;
+    rectangle.rotation.y -= event.movementX * rotationSpeed;
     updateCameraPosition(); // Update the camera's position to reflect the new orientation
   }
 }
@@ -116,16 +116,16 @@ function update() {
   const speed = 0.02; // Speed of the rectangle's movement
 
   if (moveDirection.forward) {
-    rectangle.translateZ(-speed); // Moves the rectangle forward relative to its local Z-axis
+    rectangle.translateZ(speed); // Moves the rectangle forward relative to its local Z-axis
   }
   if (moveDirection.backward) {
-    rectangle.translateZ(speed); // Moves the rectangle backward relative to its local Z-axis
+    rectangle.translateZ(-speed); // Moves the rectangle backward relative to its local Z-axis
   }
   if (moveDirection.left) {
-    rectangle.translateX(-speed); // Moves the rectangle left relative to its local X-axis
+    rectangle.translateX(speed); // Moves the rectangle left relative to its local X-axis
   }
   if (moveDirection.right) {
-    rectangle.translateX(speed); // Moves the rectangle right relative to its local X-axis
+    rectangle.translateX(-speed); // Moves the rectangle right relative to its local X-axis
   }
 }
 
