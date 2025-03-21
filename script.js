@@ -116,20 +116,16 @@ function update() {
   const speed = 0.02; // Speed of the rectangle's movement
 
   if (moveDirection.forward) {
-    rectangle.position.x += speed * Math.sin(rectangle.rotation.y);
-    rectangle.position.z += speed * Math.cos(rectangle.rotation.y);
+    rectangle.translateZ(-speed); // Moves the rectangle forward relative to its local Z-axis
   }
   if (moveDirection.backward) {
-    rectangle.position.x -= speed * Math.sin(rectangle.rotation.y);
-    rectangle.position.z -= speed * Math.cos(rectangle.rotation.y);
+    rectangle.translateZ(speed); // Moves the rectangle backward relative to its local Z-axis
   }
   if (moveDirection.left) {
-    rectangle.position.x -= speed * Math.cos(rectangle.rotation.y);
-    rectangle.position.z += speed * Math.sin(rectangle.rotation.y);
+    rectangle.translateX(-speed); // Moves the rectangle left relative to its local X-axis
   }
   if (moveDirection.right) {
-    rectangle.position.x += speed * Math.cos(rectangle.rotation.y);
-    rectangle.position.z -= speed * Math.sin(rectangle.rotation.y);
+    rectangle.translateX(speed); // Moves the rectangle right relative to its local X-axis
   }
 }
 
