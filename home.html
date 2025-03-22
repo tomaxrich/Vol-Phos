@@ -22,12 +22,14 @@
 
   <main>
     <section id="home">
+      <canvas id="cinematicCanvas"></canvas>
       <div class="scrolling-cinematic" id="cinematic">
         <p>In a galaxy far, far away, the Sith Lord Darth Therion Vol'Phos rises to power...</p>
         <p>With the dark side of the Force, he seeks to conquer the universe and bring it under his rule...</p>
         <p>Will you join him in his quest for dominance, or will you stand against the darkness?</p>
         <p>The fate of the galaxy is in your hands...</p>
       </div>
+      <button id="startGameButton" style="display: none;" onclick="startGame()">Start Game</button>
     </section>
   </main>
 
@@ -48,11 +50,15 @@
       // Convert duration to milliseconds
       const durationMs = parseFloat(duration) * 1000;
 
-      // Set a timeout to start the game after the cinematic ends
+      // Set a timeout to show the "Start Game" button after the cinematic ends
       setTimeout(() => {
-        window.location.href = 'index.html';
+        document.getElementById('startGameButton').style.display = 'block';
       }, durationMs);
     });
+
+    function startGame() {
+      window.location.href = 'index.html';
+    }
   </script>
 </body>
 </html>
