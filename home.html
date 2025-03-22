@@ -24,10 +24,10 @@
     <section id="home">
       <canvas id="cinematicCanvas"></canvas>
       <div class="scrolling-cinematic" id="cinematic">
-        <p>In a galaxy far, far away, the Sith Lord Darth Therion Vol'Phos rises to power...</p>
-        <p>With the dark side of the Force, he seeks to conquer the universe and bring it under his rule...</p>
-        <p>Will you join him in his quest for dominance, or will you stand against the darkness?</p>
-        <p>The fate of the galaxy is in your hands...</p>
+        <p class="scrolling-line" style="animation-delay: 0s;">In a galaxy far, far away, the Sith Lord Darth Therion Vol'Phos rises to power...</p>
+        <p class="scrolling-line" style="animation-delay: 5s;">With the dark side of the Force, he seeks to conquer the universe and bring it under his rule...</p>
+        <p class="scrolling-line" style="animation-delay: 10s;">Will you join him in his quest for dominance, or will you stand against the darkness?</p>
+        <p class="scrolling-line" style="animation-delay: 15s;">The fate of the galaxy is in your hands...</p>
       </div>
       <button id="startGameButton" style="display: none;" onclick="startGame()">Start Game</button>
     </section>
@@ -53,7 +53,7 @@
       // Set a timeout to show the "Start Game" button after the cinematic ends
       setTimeout(() => {
         document.getElementById('startGameButton').style.display = 'block';
-      }, durationMs);
+      }, durationMs + 15000);
     });
 
     function startGame() {
