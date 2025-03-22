@@ -61,7 +61,7 @@ body {
     position: absolute;
     width: 100%;
     top: 100%;
-    animation: scroll 20s linear infinite;
+    animation: scroll 20s linear;
   }
   
   @keyframes scroll {

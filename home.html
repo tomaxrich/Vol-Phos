@@ -22,17 +22,12 @@
 
   <main>
     <section id="home">
-      <div class="scrolling-cinematic">
+      <div class="scrolling-cinematic" id="cinematic">
         <p>In a galaxy far, far away, the Sith Lord Darth Therion Vol'Phos rises to power...</p>
         <p>With the dark side of the Force, he seeks to conquer the universe and bring it under his rule...</p>
         <p>Will you join him in his quest for dominance, or will you stand against the darkness?</p>
         <p>The fate of the galaxy is in your hands...</p>
       </div>
-    </section>
-    <section id="controls">
-      <h2>Game Controls</h2>
-      <p>Use WASD to move, mouse to aim and shoot.</p>
-      <button id="startGameButton">Start Game</button>
     </section>
   </main>
 
@@ -45,5 +40,19 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script type="module" src="main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cinematic = document.getElementById('cinematic');
+      const duration = getComputedStyle(cinematic).animationDuration;
+
+      // Convert duration to milliseconds
+      const durationMs = parseFloat(duration) * 1000;
+
+      // Set a timeout to start the game after the cinematic ends
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, durationMs);
+    });
+  </script>
 </body>
 </html>
