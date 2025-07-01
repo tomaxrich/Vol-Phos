@@ -6,6 +6,29 @@ let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
 
+//Blockyman
+  function createBlockyMan() {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 0.5), mat);
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), mat);
+  const armL = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.5, 0.4), mat);
+  const armR = armL.clone();
+  const legL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), mat);
+  const legR = legL.clone();
+
+  head.position.set(0, 2.2, 0);
+  armL.position.set(-0.8, 0.5, 0);
+  armR.position.set(0.8, 0.5, 0);
+  legL.position.set(-0.3, -1.5, 0);
+  legR.position.set(0.3, -1.5, 0);
+
+  const group = new THREE.Group();
+  group.add(torso, head, armL, armR, legL, legR);
+
+  return group;
+}
+
 function init() {
   // Set up the scene
   scene = new THREE.Scene();
@@ -17,7 +40,15 @@ function init() {
   renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-class GameObject {
+  // Add lighting (needed for StandardMaterial to be visible)
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  directionalLight.position.set(10, 10, 5);
+  scene.add(directionalLight);
+
+  class GameObject {
     constructor(geometry, material, position = {x: 0, y: 0, z: 0}) {
       this.mesh = new THREE.Mesh(geometry, material);
       this.mesh.position.set(position.x, position.y, position.z);
@@ -49,13 +80,19 @@ class GameObject {
       // Any additional logic to update after moving the object
     }
   }
-  
+  // Create a BlockyMan and add it to the scene
+  const blockyMan = createBlockyMan(); // ← we'll define this function below
+  blockyMan.position.set(0, 0, 0);
 
   // Create a vertical rectangle using GameObject
   const rectangleGeometry = new THREE.BoxGeometry(0.5, 3, 0.5);
   const rectangleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  rectangle = new GameObject(rectangleGeometry, rectangleMaterial, { x: 0, y: 1.5, z: 0 });
+  //rectangle = new GameObject(rectangleGeometry, rectangleMaterial, { x: 0, y: 1.5, z: 0 });
+  rectangle = new GameObject(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+  rectangle.mesh = blockyMan;
+  
   rectangle.addToScene(scene);
+
 
   // Load texture and create a horizontal black plane with texture using GameObject
   const textureLoader = new THREE.TextureLoader();
@@ -67,9 +104,9 @@ class GameObject {
   const planeGeometry = new THREE.PlaneGeometry(100, 100); // Increase the size of the plane
   const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
   plane = new GameObject(planeGeometry, planeMaterial);
-  plane.mesh.rotation.x = Math.PI / 2;
+  plane.mesh.rotationX = Math.PI / 2;
   plane.addToScene(scene);
-  
+
   // Add mouse move event listener
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('keydown', onKeyDown);
