@@ -9,7 +9,7 @@ let moveDirection = { forward: false, backward: false, left: false, right: false
 //starting animations
 let animationTime = 0;
 //Blockyman
-  function createBlockyMan() {
+function createBlockyMan() {
   const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 
   const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 0.5), mat);
@@ -42,6 +42,99 @@ let animationTime = 0;
 
   return torso;
 }
+function createPolyMan1() {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+
+
+
+
+
+  // Torso — slight taper with a capsule or cylinder
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.8, 2.2, 12), mat);
+  torso.name = 'torso';
+
+  // Head — sphere or rounded cube
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), mat);
+  head.position.set(0, 1.5, 0);
+  head.name = 'head';
+  torso.add(head);
+
+  // Arms — thin cylinders
+  const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.5, 8), mat);
+  armL.position.set(-0.8, 0.2, 0);
+  armL.rotation.z = Math.PI / 2;
+  armL.name = 'leftArm';
+  torso.add(armL);
+
+  const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.5, 8), mat);
+  armR.position.set(0.8, 0.2, 0);
+  armR.rotation.z = Math.PI / 2;
+  armR.name = 'rightArm';
+  torso.add(armR);
+
+  // Legs — thicker cylinders with slightly forward bend (posing)
+  const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.8, 10), mat);
+  legL.position.set(-0.3, -2.0, 0);
+  legL.name = 'leftLeg';
+  torso.add(legL);
+
+  const legR = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.8, 10), mat);
+  legR.position.set(0.3, -2.0, 0);
+  legR.name = 'rightLeg';
+  torso.add(legR);
+
+  return torso;
+}
+function createPolyMan() {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+
+  // Lower torso / abdomen
+  const lowerTorso = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.6, 1.2, 12), mat);
+  lowerTorso.name = 'lowerTorso';
+
+  // Upper torso / chest
+  const upperTorso = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.5, 1.2, 12), mat);
+  upperTorso.position.set(0, 0.9, 0); // stack it on top
+  upperTorso.name = 'upperTorso';
+
+  // Combine both parts under a torsoGroup
+  const torsoGroup = new THREE.Group();
+  torsoGroup.add(lowerTorso);
+  lowerTorso.add(upperTorso); // hierarchy for potential spine twist
+  torsoGroup.name = 'torso';
+
+  // Head
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), mat);
+  head.position.set(0, 1.2, 0);
+  head.name = 'head';
+  upperTorso.add(head);
+
+  // Arms — attach to upperTorso
+  const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.5, 8), mat);
+  armL.position.set(-0.8, 0.3, 0);
+  armL.rotation.z = Math.PI / 2;
+  armL.name = 'leftArm';
+  upperTorso.add(armL);
+
+  const armR = armL.clone();
+  armR.position.set(0.8, 0.3, 0);
+  armR.name = 'rightArm';
+  upperTorso.add(armR);
+
+  // Legs — attach to lowerTorso
+  const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.8, 10), mat);
+  legL.position.set(-0.3, -1.8, 0);
+  legL.name = 'leftLeg';
+  lowerTorso.add(legL);
+
+  const legR = legL.clone();
+  legR.position.set(0.3, -1.8, 0);
+  legR.name = 'rightLeg';
+  lowerTorso.add(legR);
+
+  return torsoGroup; // root node for animation/movement
+}
+
 
 function init() {
   // Set up the scene
@@ -95,7 +188,7 @@ function init() {
     }
   }
   // Create a BlockyMan and add it to the scene
-  const blockyMan = createBlockyMan(); // ← we'll define this function below
+  const blockyMan = createPolyMan(); // ← we'll define this function below
   blockyMan.position.set(0, 0, 0);
 
   // Create a vertical rectangle using GameObject
@@ -219,16 +312,26 @@ function update() {
 
   const man = rectangle.mesh;
 
-  const leftArm = man.getObjectByName('leftArm');
-  const rightArm = man.getObjectByName('rightArm');
   const head = man.getObjectByName('head');
 
-  if (leftArm && rightArm) {
-    const swing = Math.sin(animationTime) * 0.5;
-    leftArm.rotation.z = swing;
-    rightArm.rotation.z = -swing;
+  const leftLeg = man.getObjectByName('leftLeg');
+  const rightLeg = man.getObjectByName('rightLeg');
+  if (leftLeg && rightLeg) {
+  const swing = Math.sin(animationTime) * 0.5;
 
+  // Rotate forward/backward on X axis (like walking)
+  leftLeg.rotation.x = swing;
+  rightLeg.rotation.x = -swing;
   }
+
+  const leftArm = man.getObjectByName('leftArm');
+  const rightArm = man.getObjectByName('rightArm');
+  if (leftArm && rightArm) {
+  const swing = Math.sin(animationTime) * 0.5;
+  leftArm.rotation.y = swing;
+  rightArm.rotation.y = -swing;
+  }
+
 
   if (head) {
     head.rotation.y = Math.sin(animationTime * 0.5) * 0.3; // Add a slight rotation to the head
