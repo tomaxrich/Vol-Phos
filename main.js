@@ -49,7 +49,7 @@ function init() {
   scene.add(directionalLight);
 
   class GameObject {
-    constructor(geometry, material, position = {x: 0, y: 0, z: 0}) {
+    constructor(geometry, material, position = {x: 0, y: -3, z: 0}) {
       this.mesh = new THREE.Mesh(geometry, material);
       this.mesh.position.set(position.x, position.y, position.z);
       this.scene = null;  // The scene to which the mesh will be added
@@ -61,19 +61,19 @@ function init() {
     }
   
     moveForward(speed) {
-      this.mesh.translateZ(-speed);
-    }
-  
-    moveBackward(speed) {
       this.mesh.translateZ(speed);
     }
   
+    moveBackward(speed) {
+      this.mesh.translateZ(-speed);
+    }
+  
     moveLeft(speed) {
-      this.mesh.translateX(-speed);
+      this.mesh.translateX(speed);
     }
   
     moveRight(speed) {
-      this.mesh.translateX(speed);
+      this.mesh.translateX(-speed);
     }
   
     updatePosition() {
@@ -104,7 +104,7 @@ function init() {
   const planeGeometry = new THREE.PlaneGeometry(100, 100); // Increase the size of the plane
   const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
   plane = new GameObject(planeGeometry, planeMaterial);
-  plane.mesh.rotationX = Math.PI / 2;
+  plane.mesh.rotation.x = Math.PI / 2;
   plane.addToScene(scene);
 
   // Add mouse move event listener
