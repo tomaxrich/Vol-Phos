@@ -1,11 +1,11 @@
 //import { GameObject } from './GameObject.js';
-
+ // Array to hold thunderbolt objects
 let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
 let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
-let bolts = []; // Array to hold thunderbolt objects
+let bolts = [];
 
 
 //starting animations
@@ -136,7 +136,7 @@ function createPolyMan() {
 
   return torsoGroup; // root node for animation/movement
 }
-function createBolt(origin, direction) {
+function createBolt1(origin, direction) {
   const geometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 6);
   const material = new THREE.MeshBasicMaterial({ color: 0x00ccff, emissive: 0x00ccff });
   const bolt = new THREE.Mesh(geometry, material);
@@ -150,7 +150,34 @@ function createBolt(origin, direction) {
   scene.add(bolt);
   bolts.push(bolt);
 }
+function createBolt(origin, direction) {
+  const geometry = new THREE.CylinderGeometry(1, 1, 1, 8);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x00ff00,
+    emissive: 0x00ccff,
+    emissiveIntensity: 2,
+    metalness: 0.2,
+    roughness: 0.1
+  });
+
+  const bolt = new THREE.Mesh(geometry, material);
+  bolt.rotation.x = Math.PI / 2; // Make it shoot along Z-axis
+
+  bolt.position.copy(origin);
+  bolt.userData.velocity = direction.clone().normalize().multiplyScalar(0.3);
+  bolt.userData.age = 0;
+
+  bolt.material.transparent = false;
+  bolt.material.opacity = 1;
+
+  scene.add(bolt);
+  bolts.push(bolt);
+
+  console.log("Bolt created at", origin);
+}
+
 function fireBolt() {
+  console.log('Bolt created at beginning');
   const man = rectangle.mesh;
   const hand = man.getObjectByName('rightArm') || man; // fallback to man if hand not found
 
@@ -162,6 +189,7 @@ function fireBolt() {
   hand.getWorldPosition(handWorldPos);
 
   createBolt(handWorldPos, direction);
+  console.log('Bolt created at end');
 }
 
 function init() {
@@ -298,7 +326,8 @@ function onKeyDown(event) {
     case 'd':
       moveDirection.right = true;
       break;
-    case ' ':
+    case 'e':
+      
       fireBolt();
       break;
   }
@@ -324,64 +353,54 @@ function onKeyUp(event) {
 function update() {
   const speed = 0.02;
 
-  if (moveDirection.forward) {
-    rectangle.moveForward(speed);
-  }
-  if (moveDirection.backward) {
-    rectangle.moveBackward(speed);
-  }
-  if (moveDirection.left) {
-    rectangle.moveLeft(speed);
-  }
-  if (moveDirection.right) {
-    rectangle.moveRight(speed);
-  }
-  //old change below
-  //rectangle.updatePosition();
+  if (moveDirection.forward) rectangle.moveForward(speed);
+  if (moveDirection.backward) rectangle.moveBackward(speed);
+  if (moveDirection.left) rectangle.moveLeft(speed);
+  if (moveDirection.right) rectangle.moveRight(speed);
 
-  // Update thunderbolt positions
-  // Update bolts
+  // Update thunderbolts
   for (let i = bolts.length - 1; i >= 0; i--) {
     const bolt = bolts[i];
     bolt.position.add(bolt.userData.velocity);
-    bolt.userData.age += 1;
+    bolt.userData.age++;
 
-  if (bolt.userData.age > 120) { // remove after ~2 seconds
-    scene.remove(bolt);
-    bolts.splice(i, 1);
+    // Fade out
+    bolt.material.opacity = 1 - (bolt.userData.age / 120);
+    bolt.material.transparent = true;
+
+    if (bolt.userData.age > 120) {
+      scene.remove(bolt);
+      bolts.splice(i, 1);
+      console.log("Bolt removed");
+    }
   }
-}
-
 
   animationTime += 0.001;
-
   const man = rectangle.mesh;
 
   const head = man.getObjectByName('head');
-
   const leftLeg = man.getObjectByName('leftLeg');
   const rightLeg = man.getObjectByName('rightLeg');
-  if (leftLeg && rightLeg) {
-  const swing = Math.sin(animationTime) * 0.5;
-
-  // Rotate forward/backward on X axis (like walking)
-  leftLeg.rotation.x = swing;
-  rightLeg.rotation.x = -swing;
-  }
-
   const leftArm = man.getObjectByName('leftArm');
   const rightArm = man.getObjectByName('rightArm');
-  if (leftArm && rightArm) {
+
   const swing = Math.sin(animationTime) * 0.5;
-  leftArm.rotation.y = swing;
-  rightArm.rotation.y = -swing;
+
+  if (leftLeg && rightLeg) {
+    leftLeg.rotation.x = swing;
+    rightLeg.rotation.x = -swing;
   }
 
+  if (leftArm && rightArm) {
+    leftArm.rotation.y = swing;
+    rightArm.rotation.y = -swing;
+  }
 
   if (head) {
-    head.rotation.y = Math.sin(animationTime * 0.5) * 0.3; // Add a slight rotation to the head
+    head.rotation.y = Math.sin(animationTime * 0.5) * 0.3;
   }
 }
+
 
 // Update loop
 function gameLoop() {
