@@ -5,6 +5,8 @@ let isMouseCaptured = false;
 let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
+let bolts = []; // Array to hold thunderbolt objects
+
 
 //starting animations
 let animationTime = 0;
@@ -134,7 +136,33 @@ function createPolyMan() {
 
   return torsoGroup; // root node for animation/movement
 }
+function createBolt(origin, direction) {
+  const geometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 6);
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ccff, emissive: 0x00ccff });
+  const bolt = new THREE.Mesh(geometry, material);
+  bolt.rotation.x = Math.PI / 2;
 
+  // Set initial position & direction
+  bolt.position.copy(origin);
+  bolt.userData.velocity = direction.clone().normalize().multiplyScalar(0.3);
+  bolt.userData.age = 0;
+
+  scene.add(bolt);
+  bolts.push(bolt);
+}
+function fireBolt() {
+  const man = rectangle.mesh;
+  const hand = man.getObjectByName('rightArm') || man; // fallback to man if hand not found
+
+  // Get forward direction
+  const direction = new THREE.Vector3(0, 0, -1);
+  direction.applyQuaternion(man.quaternion);
+
+  const handWorldPos = new THREE.Vector3();
+  hand.getWorldPosition(handWorldPos);
+
+  createBolt(handWorldPos, direction);
+}
 
 function init() {
   // Set up the scene
@@ -270,6 +298,9 @@ function onKeyDown(event) {
     case 'd':
       moveDirection.right = true;
       break;
+    case ' ':
+      fireBolt();
+      break;
   }
 }
 
@@ -307,6 +338,20 @@ function update() {
   }
   //old change below
   //rectangle.updatePosition();
+
+  // Update thunderbolt positions
+  // Update bolts
+  for (let i = bolts.length - 1; i >= 0; i--) {
+    const bolt = bolts[i];
+    bolt.position.add(bolt.userData.velocity);
+    bolt.userData.age += 1;
+
+  if (bolt.userData.age > 120) { // remove after ~2 seconds
+    scene.remove(bolt);
+    bolts.splice(i, 1);
+  }
+}
+
 
   animationTime += 0.001;
 
