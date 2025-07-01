@@ -6,6 +6,8 @@ let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
 
+//starting animations
+let animationTime = 0;
 //Blockyman
   function createBlockyMan() {
   const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
@@ -198,6 +200,21 @@ function update() {
   if (moveDirection.right) {
     rectangle.moveRight(speed);
   }
+  //old change below
+  //rectangle.updatePosition();
+
+  animationTime += 0.05;
+
+  const arms = rectangle.mesh.children.filter(part => part.geometry && part.geometry.type === "BoxGeometry" && part.geometry.parameters.height === 1.5);
+
+  if (arms.length >= 2) {
+  const swing = Math.sin(animationTime) * 0.5;
+  arms[0].rotation.z = swing;    // left arm
+  arms[1].rotation.z = -swing;   // right arm
+  }
+
+  // Optional: breathing motion
+  rectangle.mesh.children[0].position.y = 0.1 * Math.sin(animationTime * 0.5); // torso breathing
 
   rectangle.updatePosition();
 }
