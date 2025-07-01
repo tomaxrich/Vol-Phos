@@ -6,6 +6,7 @@ let cameraOffset = new THREE.Vector3(0, 3, 5); // Offset for the camera position
 let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
 let bolts = [];
+let dragon;
 
 
 //starting animations
@@ -44,12 +45,9 @@ function createBlockyMan() {
 
   return torso;
 }
+
 function createPolyMan1() {
   const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-
-
-
-
 
   // Torso — slight taper with a capsule or cylinder
   const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.8, 2.2, 12), mat);
@@ -87,6 +85,7 @@ function createPolyMan1() {
 
   return torso;
 }
+
 function createPolyMan() {
   const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 
@@ -136,22 +135,133 @@ function createPolyMan() {
 
   return torsoGroup; // root node for animation/movement
 }
-function createBolt1(origin, direction) {
-  const geometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 6);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ccff, emissive: 0x00ccff });
-  const bolt = new THREE.Mesh(geometry, material);
-  bolt.rotation.x = Math.PI / 2;
 
-  // Set initial position & direction
-  bolt.position.copy(origin);
-  bolt.userData.velocity = direction.clone().normalize().multiplyScalar(0.3);
-  bolt.userData.age = 0;
+function createSegmentedSith() {
+  const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 
-  scene.add(bolt);
-  bolts.push(bolt);
+  // === Lower + Upper Torso ===
+  const lowerTorso = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.6, 1.2, 12), mat);
+  lowerTorso.name = 'lowerTorso';
+
+  const upperTorso = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.5, 1.2, 12), mat);
+  upperTorso.position.set(0, 0.9, 0);
+  upperTorso.name = 'upperTorso';
+  lowerTorso.add(upperTorso);
+
+  const torsoGroup = new THREE.Group();
+  torsoGroup.add(lowerTorso);
+  torsoGroup.name = 'torso';
+
+  // === Shoulders (bulky rectangles) ===
+  const shoulderBlock = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.5, 1.3), mat);
+  shoulderBlock.position.set(0, 0.5, 0);
+  shoulderBlock.name = 'shoulderBlock';
+  upperTorso.add(shoulderBlock);
+
+  // === Arms ===
+  // === LEFT ARM ===
+const upperArmL = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.2, 0.2, 0.9, 8),
+  mat
+);
+upperArmL.name = 'upperArmL';
+upperArmL.position.set(-1, 0, 0);
+upperArmL.rotation.z = Math.PI / 2;
+shoulderBlock.add(upperArmL);
+
+const forearmL = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.18, 0.18, 0.8, 8),
+  mat
+);
+forearmL.name = 'forearmL';
+forearmL.position.set(0.9, 0.0, 0); // hangs downward from upper arm
+forearmL.rotation.y = Math.PI / 2; // 🔁 rotate downward
+upperArmL.add(forearmL);
+
+// === RIGHT ARM ===
+const upperArmR = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.2, 0.2, 0.9, 8),
+  mat
+);
+upperArmR.name = 'upperArmR';
+upperArmR.position.set(1, 0, 0);
+upperArmR.rotation.z = -Math.PI / 2; // mirror the rotation direction
+shoulderBlock.add(upperArmR);
+
+const forearmR = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.18, 0.18, 0.8, 8),
+  mat
+);
+forearmR.name = 'forearmR';
+forearmR.position.set(-0.9, 0.0, 0); // hangs downward
+upperArmR.add(forearmR);
+
+  // === Legs ===
+  const thighL = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.2, 10), mat);
+  thighL.position.set(-0.4, -1.5, 0);
+  thighL.name = 'thighL';
+  lowerTorso.add(thighL);
+
+  const shinL = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.2, 10), mat);
+  shinL.position.set(0, -1.2, 0);
+  shinL.name = 'shinL';
+  thighL.add(shinL);
+
+  const thighR = thighL.clone();
+  thighR.position.set(0.4, -1.5, 0);
+  thighR.name = 'thighR';
+  lowerTorso.add(thighR);
+
+  const shinR = shinL.clone();
+  shinR.name = 'shinR';
+  thighR.add(shinR);
+
+  // === Head ===
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), mat);
+  head.position.set(0, 1.2, 0);
+  head.name = 'head';
+  upperTorso.add(head);
+
+  return torsoGroup;
 }
+
+function createBlockyDragon(segmentCount = 10) {
+  const mat = new THREE.MeshStandardMaterial({ color: 0xcc1100 });
+  const segmentGeo = new THREE.BoxGeometry(1, 1, 2);
+
+  const dragonRoot = new THREE.Group();
+  let prevSegment = null;
+
+  for (let i = 0; i < segmentCount; i++) {
+    const segment = new THREE.Mesh(segmentGeo, mat);
+    segment.name = `segment_${i}`;
+    segment.position.set(0, 0, -2); // forward in Z
+
+    const segmentGroup = new THREE.Group();
+    segmentGroup.name = `group_${i}`;
+    segmentGroup.add(segment);
+
+    if (prevSegment) {
+      prevSegment.add(segmentGroup);
+      segmentGroup.position.set(0, 0, -2);
+    } else {
+      dragonRoot.add(segmentGroup); // head/root
+    }
+
+    prevSegment = segmentGroup;
+  }
+
+  // Head detail
+  const head = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1, 1.5), mat);
+  head.position.set(0, 0, 1);
+  head.name = 'dragonHead';
+  dragonRoot.children[0].add(head);
+
+  return dragonRoot;
+}
+
 function createBolt(origin, direction) {
-  const geometry = new THREE.CylinderGeometry(1, 1, 1, 8);
+  const geometry = new THREE.CylinderGeometry(0.05, 0.05, 1, 8);
   const material = new THREE.MeshStandardMaterial({
     color: 0x00ff00,
     emissive: 0x00ccff,
@@ -167,7 +277,7 @@ function createBolt(origin, direction) {
   bolt.userData.velocity = direction.clone().normalize().multiplyScalar(0.3);
   bolt.userData.age = 0;
 
-  bolt.material.transparent = false;
+  bolt.material.transparent = true;
   bolt.material.opacity = 1;
 
   scene.add(bolt);
@@ -190,6 +300,18 @@ function fireBolt() {
 
   createBolt(handWorldPos, direction);
   console.log('Bolt created at end');
+}
+
+function animateDragon(dragon, t) {
+  const waveSpeed = 2;
+  const waveAmplitude = 0.3;
+
+  for (let i = 0; i < dragon.children.length; i++) {
+    const segmentGroup = dragon.getObjectByName(`group_${i}`);
+    if (segmentGroup) {
+      segmentGroup.rotation.y = Math.sin(t * waveSpeed + i * 0.5) * waveAmplitude;
+    }
+  }
 }
 
 function init() {
@@ -244,16 +366,21 @@ function init() {
     }
   }
   // Create a BlockyMan and add it to the scene
-  const blockyMan = createPolyMan(); // ← we'll define this function below
-  blockyMan.position.set(0, 0, 0);
+  //const blockyMan = createSegmentedSith(); // ← we'll define this function below
+  const sithLord = createSegmentedSith(); // ← we'll define this function below
+  sithLord.position.set(0, 0, 0); // Position it above the ground
+  rectangle = new GameObject(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial()); // Placeholder init
+  rectangle.mesh = sithLord; // Assign the mesh to rectangle
+  rectangle.addToScene(sithLord); // Add the sith lord to the scene
 
   // Create a vertical rectangle using GameObject
   const rectangleGeometry = new THREE.BoxGeometry(0.5, 3, 0.5);
   const rectangleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   //rectangle = new GameObject(rectangleGeometry, rectangleMaterial, { x: 0, y: 1.5, z: 0 });
-  rectangle = new GameObject(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
-  rectangle.mesh = blockyMan;
-  
+  //rectangle = new GameObject(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial());
+  dragon = createBlockyDragon(10); // Create the dragon with 10 segments
+  dragon.position.set(10, 0, -15); // Position it at the origin
+  scene.add(dragon); // Add the dragon to the scene
   rectangle.addToScene(scene);
 
 
@@ -376,8 +503,9 @@ function update() {
   }
 
   animationTime += 0.001;
-  const man = rectangle.mesh;
 
+  const man = rectangle.mesh;
+  
   const head = man.getObjectByName('head');
   const leftLeg = man.getObjectByName('leftLeg');
   const rightLeg = man.getObjectByName('rightLeg');
@@ -399,6 +527,8 @@ function update() {
   if (head) {
     head.rotation.y = Math.sin(animationTime * 0.5) * 0.3;
   }
+
+  
 }
 
 
