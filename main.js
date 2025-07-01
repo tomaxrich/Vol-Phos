@@ -13,22 +13,34 @@ let animationTime = 0;
   const mat = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 
   const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 0.5), mat);
+  torso.name = 'torso'; // Name the torso for easier identification later
+  
   const head = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.8), mat);
+  head.position.set(0,1.5,0);
+  head.name = 'head';
+  torso.add(head); //attach to torso
+  
   const armL = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.5, 0.4), mat);
+  armL.position.set(-0.8, 0.25, 0);
+  armL.name = 'leftArm'; // Name the left arm for easier identification later
+  torso.add(armL); //attach to torso
+
   const armR = armL.clone();
+  armR.position.set(0.8, 0.25, 0);
+  armR.name = 'rightArm'; // Name the right arm for easier identification later
+  torso.add(armR); //attach to torso
+  
   const legL = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.8, 0.5), mat);
+  legL.position.set(-0.3, -2.0, 0);
+  legL.name = 'leftLeg'; // Name the left leg for easier identification later
+  torso.add(legL); //attach to torso
+  
   const legR = legL.clone();
+  legR.position.set(0.3, -2.0, 0);
+  legR.name = 'rightLeg'; // Name the right leg for easier identification later 
+  torso.add(legR); //attach to torso
 
-  head.position.set(0, 2.2, 0);
-  armL.position.set(-0.8, 0.5, 0);
-  armR.position.set(0.8, 0.5, 0);
-  legL.position.set(-0.3, -1.5, 0);
-  legR.position.set(0.3, -1.5, 0);
-
-  const group = new THREE.Group();
-  group.add(torso, head, armL, armR, legL, legR);
-
-  return group;
+  return torso;
 }
 
 function init() {
@@ -203,20 +215,24 @@ function update() {
   //old change below
   //rectangle.updatePosition();
 
-  animationTime += 0.05;
+  animationTime += 0.001;
 
-  const arms = rectangle.mesh.children.filter(part => part.geometry && part.geometry.type === "BoxGeometry" && part.geometry.parameters.height === 1.5);
+  const man = rectangle.mesh;
 
-  if (arms.length >= 2) {
-  const swing = Math.sin(animationTime) * 0.5;
-  arms[0].rotation.z = swing;    // left arm
-  arms[1].rotation.z = -swing;   // right arm
+  const leftArm = man.getObjectByName('leftArm');
+  const rightArm = man.getObjectByName('rightArm');
+  const head = man.getObjectByName('head');
+
+  if (leftArm && rightArm) {
+    const swing = Math.sin(animationTime) * 0.5;
+    leftArm.rotation.z = swing;
+    rightArm.rotation.z = -swing;
+
   }
 
-  // Optional: breathing motion
-  rectangle.mesh.children[0].position.y = 0.1 * Math.sin(animationTime * 0.5); // torso breathing
-
-  rectangle.updatePosition();
+  if (head) {
+    head.rotation.y = Math.sin(animationTime * 0.5) * 0.3; // Add a slight rotation to the head
+  }
 }
 
 // Update loop
