@@ -29,6 +29,7 @@
         <p class="scrolling-line" style="animation-delay: 10s;">Will you join him in his quest for dominance, or will you stand against the darkness?</p>
         <p class="scrolling-line" style="animation-delay: 15s;">The fate of the galaxy is in your hands...</p>
       </div>
+      <canvas id="gameCanvas" style="display: none;"></canvas> <!--new test section-->
       <button id="startGameButton" style="display: none;" onclick="startGame()">Start Game</button>
     </section>
   </main>
@@ -57,6 +58,18 @@
     });
 
     function startGame() {
+      //hide cinematic elements
+      document.getElementById('cinematicCanvas').style.display = 'none';
+      document.getElementById('cinematic').style.display = 'none';
+      document.getElementById('startGameButton').style.display = 'none';
+      
+      // Show game canvas
+      document.getElementById('gameCanvas').style.display = 'block';
+      
+
+      // Initialize game
+      init(); // <-- This starts rendering and input handling
+      
       window.location.href = 'index.html';
     }
   </script>

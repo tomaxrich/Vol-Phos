@@ -1,4 +1,4 @@
-import { GameObject } from './GameObject.js';
+//import { GameObject } from './GameObject.js';
 
 let scene, camera, renderer, rectangle, plane;
 let isMouseCaptured = false;
@@ -16,6 +16,40 @@ function init() {
   // Set up the renderer
   renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
   renderer.setSize(window.innerWidth, window.innerHeight);
+
+class GameObject {
+    constructor(geometry, material, position = {x: 0, y: 0, z: 0}) {
+      this.mesh = new THREE.Mesh(geometry, material);
+      this.mesh.position.set(position.x, position.y, position.z);
+      this.scene = null;  // The scene to which the mesh will be added
+    }
+  
+    addToScene(scene) {
+      this.scene = scene;
+      this.scene.add(this.mesh);
+    }
+  
+    moveForward(speed) {
+      this.mesh.translateZ(-speed);
+    }
+  
+    moveBackward(speed) {
+      this.mesh.translateZ(speed);
+    }
+  
+    moveLeft(speed) {
+      this.mesh.translateX(-speed);
+    }
+  
+    moveRight(speed) {
+      this.mesh.translateX(speed);
+    }
+  
+    updatePosition() {
+      // Any additional logic to update after moving the object
+    }
+  }
+  
 
   // Create a vertical rectangle using GameObject
   const rectangleGeometry = new THREE.BoxGeometry(0.5, 3, 0.5);
@@ -35,7 +69,7 @@ function init() {
   plane = new GameObject(planeGeometry, planeMaterial);
   plane.mesh.rotation.x = Math.PI / 2;
   plane.addToScene(scene);
-
+  
   // Add mouse move event listener
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('keydown', onKeyDown);
