@@ -7,6 +7,13 @@ let cameraRotation = { y: 0 }; // Track camera rotation
 let moveDirection = { forward: false, backward: false, left: false, right: false };
 let bolts = [];
 let dragon;
+let inventory = [
+{name: "Blue Thunderbolt", icon: " "},
+{name: "Sith Cloak", icon: " "},
+{name: "Health Potion", icon: " "},
+]
+
+let inventoryVisible = false; // Track inventory visibility
 
 
 //starting animations
@@ -610,8 +617,8 @@ function onMouseMove(event) {
 }
 
 function onKeyDown(event) {
-  switch (event.key) {
-    case 'Tab':
+  switch (event.key.toLowerCase()) {
+    case 'tab':
       if (isMouseCaptured) {
         document.exitPointerLock();
       } else {
@@ -631,8 +638,34 @@ function onKeyDown(event) {
       moveDirection.right = true;
       break;
     case 'e':
-      
       fireBolt();
+      break;
+    case 'i': // ✅ Inventory toggle here
+      /*inventoryVisible = !inventoryVisible;
+      const ui = document.getElementById('inventoryUI');
+      if (inventoryVisible) {
+        ui.classList.remove('hidden');
+        updateInventoryUI();
+      } else {
+        ui.classList.add('hidden');
+        console.log("help!");
+      }
+        */
+       /*
+        const inventoryUI = document.getElementById('inventoryUI');
+      if (inventoryUI) {
+      inventoryUI.classList.toggle('hidden');
+      } else {
+      console.warn('Inventory UI not found');
+      }
+      */
+      const inventoryUI = document.getElementById('inventoryUI');
+      if (inventoryUI) {
+        inventoryUI.classList.toggle('hidden');
+        console.log("Toggled inventory");
+      } else {
+        console.warn('Inventory UI element not found');
+      }
       break;
   }
 }

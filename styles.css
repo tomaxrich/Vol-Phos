@@ -9,7 +9,44 @@ body {
     background: url('./assets/images/image.png') no-repeat center center fixed;
     background-size: cover;
   }
-  
+  .inventory {
+    position: fixed;
+    top: 10%;
+    right: 5%;
+    width: 250px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid #00ccff;
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-family: monospace;
+    z-index: 1000;
+  }
+.inventory h2 {
+    margin-top: 0;
+    font-size: 18px;
+    text-align: center;
+  }
+.inventory ul {
+    list-style: none;
+    padding-left: 0;  
+  }
+.inventory li {
+    margin: 5px 0;
+    padding: 4px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+  }
+.inventory li span {
+    margin-right: 8px;
+  }
+.hidden {
+    display: none;
+  }
+/* Header Styles */
   header {
     background-color: #1C1C1C; /* Dark background color */
     color: #FF0000; /* Sith red color for text */
