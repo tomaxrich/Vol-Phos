@@ -225,7 +225,7 @@ upperArmR.add(forearmR);
   return torsoGroup;
 }
 
-function createBlockyDragon(segmentCount = 10) {
+function createBlockyDragon1(segmentCount = 10) {
   const mat = new THREE.MeshStandardMaterial({ color: 0xcc1100 });
   const segmentGeo = new THREE.BoxGeometry(1, 1, 2);
 
@@ -256,6 +256,183 @@ function createBlockyDragon(segmentCount = 10) {
   head.position.set(0, 0, 1);
   head.name = 'dragonHead';
   dragonRoot.children[0].add(head);
+
+  return dragonRoot;
+}
+
+function createBlockyDragon2(segmentCount = 10) {
+  const mat = new THREE.MeshStandardMaterial({ color: 0xcc1100 });
+  const dragonRoot = new THREE.Group();
+  let prevSegment = null;
+
+  for (let i = 0; i < segmentCount; i++) {
+    const segment = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 2), mat);
+    segment.name = `segment_${i}`;
+
+    const segmentGroup = new THREE.Group();
+    segmentGroup.name = `group_${i}`;
+    segmentGroup.add(segment);
+
+    if (prevSegment) {
+      prevSegment.add(segmentGroup);
+      segmentGroup.position.set(0, 0, -2); // spacing between segments
+    } else {
+      dragonRoot.add(segmentGroup); // root/head
+    }
+
+    prevSegment = segmentGroup;
+
+    // === Add head features to first segment ===
+    if (i === 0) {
+      const head = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1, 1.5), mat);
+      head.position.set(0, 0, 1.25);
+      head.name = 'dragonHead';
+      segment.add(head);
+
+      const jaw = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.3, 0.8), mat);
+      jaw.position.set(0, -0.5, 1.25);
+      jaw.name = 'jaw';
+      segment.add(jaw);
+
+      const hornL = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.2, 0.8, 6), mat);
+      hornL.position.set(-0.4, 0.6, 1.3);
+      hornL.rotation.x = Math.PI / 2;
+      segment.add(hornL);
+
+      const hornR = hornL.clone();
+      hornR.position.x = 0.4;
+      segment.add(hornR);
+    }
+  }
+
+  return dragonRoot;
+}
+
+function createBlockyDragon(segmentCount = 10) {
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xcc1100 });
+  const detailMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+  const eyeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const wingMat = new THREE.MeshStandardMaterial({
+    color: 0x990000,
+    transparent: true,
+    opacity: 0.4,
+    side: THREE.DoubleSide,
+  });
+
+  const dragonRoot = new THREE.Group();
+  let prevSegment = null;
+
+  for (let i = 0; i < segmentCount; i++) {
+    const segment = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 2), bodyMat);
+    segment.name = `segment_${i}`;
+
+    const segmentGroup = new THREE.Group();
+    segmentGroup.name = `group_${i}`;
+    segmentGroup.add(segment);
+
+    if (prevSegment) {
+      prevSegment.add(segmentGroup);
+      segmentGroup.position.set(0, 0, -2); // offset from last
+    } else {
+      dragonRoot.add(segmentGroup);
+    }
+
+    prevSegment = segmentGroup;
+
+    // === HEAD FEATURES ===
+    if (i === 0) {
+      const head = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1, 1.5), bodyMat);
+      head.position.set(0, 0, 1.25);
+      head.name = 'dragonHead';
+      segment.add(head);
+
+      // Eyes
+      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), eyeMat);
+      eyeL.position.set(-0.35, 0.3, 1.9);
+      head.add(eyeL);
+
+      const eyeR = eyeL.clone();
+      eyeR.position.x = 0.35;
+      head.add(eyeR);
+
+      // Fangs
+      const fangL = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.1, 0.4, 8), detailMat);
+      fangL.position.set(-0.3, -0.3, 1.7);
+      fangL.rotation.x = Math.PI / 2;
+      head.add(fangL);
+
+      const fangR = fangL.clone();
+      fangR.position.x = 0.3;
+      head.add(fangR);
+
+      // Horns
+      const hornL = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.2, 0.8, 6), detailMat);
+      hornL.position.set(-0.4, 0.6, 1.3);
+      hornL.rotation.x = Math.PI / 2;
+      head.add(hornL);
+
+      const hornR = hornL.clone();
+      hornR.position.x = 0.4;
+      head.add(hornR);
+    }
+
+    // === LIMBS === (Front on segment 1, Back on segmentCount - 2)
+    if (i === 1 || i === segmentCount - 2) {
+      const isFront = i === 1;
+      const limbLength = isFront ? 1.2 : 1.5;
+      const yOffset = -0.6;
+
+      const limbL = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.2, limbLength, 8), bodyMat);
+      limbL.position.set(-0.5, yOffset, 0.4);
+      limbL.rotation.z = Math.PI / 2;
+      segment.add(limbL);
+
+      const clawL = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.3, 8), detailMat);
+      clawL.position.set(-1, yOffset, 0.4);
+      clawL.rotation.z = -Math.PI / 2;
+      segment.add(clawL);
+
+      const limbR = limbL.clone();
+      limbR.position.x = 0.5;
+      segment.add(limbR);
+
+      const clawR = clawL.clone();
+      clawR.position.x = 1;
+      segment.add(clawR);
+    }
+
+    // === WINGS === (only on segment 2 for now)
+    if (i === 2) {
+      const boneL = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3, 8), detailMat);
+      boneL.position.set(-0.7, 0.3, 0);
+      boneL.rotation.z = Math.PI / 3;
+      segment.add(boneL);
+
+      const boneR = boneL.clone();
+      boneR.position.x = 0.7;
+      boneR.rotation.z = -Math.PI / 3;
+      segment.add(boneR);
+
+      const membraneGeo = new THREE.BufferGeometry();
+      const verts = new Float32Array([
+        0, 0, 0,
+        -1.5, 0.2, -1.5,
+        -2.5, 0.2, 0,
+      ]);
+      membraneGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+      membraneGeo.computeVertexNormals();
+
+      const wingL = new THREE.Mesh(membraneGeo, wingMat);
+      wingL.position.set(-0.5, 0.2, 0);
+      segment.add(wingL);
+
+      const wingR = wingL.clone();
+      wingR.geometry = wingL.geometry.clone();
+      wingR.scale.x = -1;
+      wingR.position.x = 0.5;
+      segment.add(wingR);
+    }
+  }
 
   return dragonRoot;
 }
