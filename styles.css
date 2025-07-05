@@ -46,6 +46,20 @@ body {
 .hidden {
     display: none;
   }
+
+  #inventoryUI {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 220px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #00ff00;
+  font-family: monospace;
+  font-size: 14px;
+  border: 2px solid limegreen;
+  z-index: 1000; /* Ensure it's above canvas */
+}
 /* Header Styles */
   header {
     background-color: #1C1C1C; /* Dark background color */
